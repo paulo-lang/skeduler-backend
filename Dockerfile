@@ -1,17 +1,12 @@
 # Use the official Node.js image as the base image
-FROM node:24-alpine3.21
-
-# Set the working directory inside the container
+FROM node:24-alpine3.21 AS base
 WORKDIR /app
-
-# Copy package.json and package-lock.json to the working directory
-COPY package*.json ./
-
-# Install dependencies
+COPY ./src ./src
+COPY ["package.json", "package-lock.json", "./"]
 RUN npm install
 
-# Copy the rest of the application code to the working directory
-COPY . .
+# Install dependencies
+FROM base AS dev
 
-# Start the application
-CMD ["npm", "start"]
+WORKDIR /app
+ENTRYPOINT [ "npm", "run", "start:debug" ]
